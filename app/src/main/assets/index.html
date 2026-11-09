@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>مواقيت الصلاة - القاهرة</title>
+<style>
+  :root{
+    --gold-1:#f6e27a;
+    --gold-2:#d4af37;
+    --gold-3:#a67c00;
+    --gold-4:#6e4f00;
+    --black:#000;
+    --ink:#0b0905;
+    --panel:#110d05;
+    --gold-grad:linear-gradient(135deg,#f6e27a 0%,#d4af37 45%,#a67c00 100%);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;background:#000;color:var(--gold-1);
+    font-family:'Amiri','Noto Naskh Arabic','Droid Arabic Naskh','Traditional Arabic',serif;
+    min-height:100%;-webkit-text-size-adjust:100%}
+  body{
+    min-height:100vh;
+    background-color:#000;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23d4af37' stroke-opacity='.14' stroke-width='1'%3E%3Cpath d='M40 6 L48 24 L66 16 L58 34 L74 40 L58 46 L66 64 L48 56 L40 74 L32 56 L14 64 L22 46 L6 40 L22 34 L14 16 L32 24 Z'/%3E%3Ccircle cx='40' cy='40' r='9'/%3E%3C/g%3E%3C/svg%3E");
+    padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:14px 14px 28px}
+
+  /* ---------- إطار زخرفي ---------- */
+  .frame{
+    position:relative;border-radius:22px;padding:2px;
+    background:var(--gold-grad);
+    box-shadow:0 0 28px rgba(212,175,55,.18);
+  }
+  .frame>.inner{
+    border-radius:20px;background:linear-gradient(180deg,#0d0a04,#000);
+    position:relative;overflow:hidden;
+  }
+  .frame>.inner::before{
+    content:"";position:absolute;inset:6px;border:1px solid rgba(212,175,55,.45);
+    border-radius:15px;pointer-events:none;
+  }
+
+  /* ---------- الرأس (محراب) ---------- */
+  header{text-align:center;padding:22px 16px 10px;position:relative}
+  .arch{width:100%;max-width:300px;height:auto;display:block;margin:0 auto -6px}
+  h1{
+    margin:0;font-size:34px;font-weight:700;line-height:1.25;
+    background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;
+    color:transparent;-webkit-text-fill-color:transparent;
+    text-shadow:0 0 18px rgba(212,175,55,.25);
+  }
+  .city{margin-top:2px;font-size:19px;color:var(--gold-2);letter-spacing:.5px}
+  .divider{display:flex;align-items:center;gap:10px;margin:12px auto 0;max-width:300px}
+  .divider i{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-2),transparent)}
+  .divider svg{width:22px;height:22px;flex:none}
+
+  /* ---------- التاريخ والساعة ---------- */
+  .datebox{text-align:center;padding:4px 14px 6px}
+  .clock{
+    font-size:46px;font-weight:700;direction:ltr;unicode-bidi:plaintext;
+    color:var(--gold-1);text-shadow:0 0 14px rgba(246,226,122,.35);
+    letter-spacing:1px;line-height:1.2;
+  }
+  .clock small{font-size:20px;margin-inline-start:6px;color:var(--gold-2)}
+  .dates{font-size:17px;color:#e8cf72;line-height:1.7}
+  .dates .hijri{color:var(--gold-1);font-weight:700}
+
+  /* ---------- الصلاة القادمة ---------- */
+  .next{
+    margin:14px 16px 6px;padding:14px 12px 12px;text-align:center;border-radius:16px;
+    background:radial-gradient(ellipse at 50% 0%,rgba(212,175,55,.22),rgba(212,175,55,.04) 70%);
+    border:1px solid rgba(212,175,55,.5);
+  }
+  .next .lbl{font-size:16px;color:var(--gold-2)}
+  .next .name{font-size:32px;font-weight:700;color:var(--gold-1);line-height:1.3}
+  .next .count{
+    font-size:34px;direction:ltr;color:#fff3b0;font-weight:700;letter-spacing:2px;
+    text-shadow:0 0 12px rgba(246,226,122,.4);
+  }
+  .next .sub{font-size:15px;color:var(--gold-2)}
+
+  /* ---------- قائمة المواقيت ---------- */
+  ul.times{list-style:none;margin:10px 16px 18px;padding:0;display:flex;flex-direction:column;gap:9px}
+  ul.times li{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px;border-radius:14px;position:relative;
+    background:linear-gradient(90deg,rgba(212,175,55,.08),rgba(212,175,55,.02));
+    border:1px solid rgba(212,175,55,.32);
+    transition:all .25s;
+  }
+  ul.times li .n{display:flex;align-items:center;gap:11px;font-size:23px;color:var(--gold-1);font-weight:700}
+  ul.times li .n svg{width:26px;height:26px;flex:none}
+  ul.times li .t{font-size:27px;font-weight:700;color:#fff3b0;direction:rtl;white-space:nowrap}
+  ul.times li .t small{font-size:16px;color:var(--gold-2);margin-inline-start:5px;font-weight:400}
+  ul.times li.passed{opacity:.55}
+  ul.times li.active{
+    background:var(--gold-grad);border-color:#fff3b0;
+    box-shadow:0 0 22px rgba(246,226,122,.45);opacity:1;
+  }
+  ul.times li.active .n,ul.times li.active .t,ul.times li.active .t small{color:#1a1200}
+  ul.times li.active .n svg *{stroke:#1a1200}
+  ul.times li.active .n svg [fill]:not([fill=none]){fill:#1a1200}
+
+  footer{text-align:center;color:#a98a2b;font-size:13px;padding:0 18px 18px;line-height:1.8}
+  footer b{color:var(--gold-2);font-weight:400}
+  .bottom-orn{display:block;margin:0 auto 6px;width:200px;height:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="frame"><div class="inner">
+
+    <header>
+      <!-- محراب مزخرف -->
+      <svg class="arch" viewBox="0 0 300 120" aria-hidden="true">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f6e27a"/><stop offset=".5" stop-color="#d4af37"/><stop offset="1" stop-color="#a67c00"/>
+          </linearGradient>
+        </defs>
+        <path d="M20 118 V70 C20 30 110 40 150 6 C190 40 280 30 280 70 V118" fill="none" stroke="url(#g)" stroke-width="3"/>
+        <path d="M34 118 V74 C34 44 112 50 150 20 C188 50 266 44 266 74 V118" fill="none" stroke="url(#g)" stroke-width="1.2" stroke-opacity=".7"/>
+        <!-- هلال ونجمة -->
+        <g transform="translate(150 70)">
+          <circle r="22" fill="url(#g)"/>
+          <circle cx="8" cy="-4" r="18" fill="#050403"/>
+          <path d="M20 -12 L23 -4 L31 -4 L25 1 L27 9 L20 4 L13 9 L15 1 L9 -4 L17 -4 Z" fill="url(#g)"/>
+        </g>
+        <g fill="url(#g)">
+          <circle cx="62" cy="96" r="3"/><circle cx="238" cy="96" r="3"/>
+          <circle cx="80" cy="82" r="2"/><circle cx="220" cy="82" r="2"/>
+        </g>
+      </svg>
+      <h1>مواقيت الصلاة</h1>
+      <div class="city">القاهرة · جمهورية مصر العربية</div>
+      <div class="divider">
+        <i></i>
+        <svg viewBox="0 0 24 24"><path d="M12 1 L15 8 L22.5 6 L17 12 L22.5 18 L15 16 L12 23 L9 16 L1.5 18 L7 12 L1.5 6 L9 8 Z" fill="#d4af37"/></svg>
+        <i></i>
+      </div>
+    </header>
+
+    <section class="datebox">
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="dates"><span class="hijri" id="hijri"></span><br><span id="greg"></span></div>
+    </section>
+
+    <section class="next">
+      <div class="lbl">الصلاة القادمة</div>
+      <div class="name" id="nextName">—</div>
+      <div class="count" id="count">--:--:--</div>
+      <div class="sub" id="nextAt"></div>
+    </section>
+
+    <ul class="times" id="times"></ul>
+
+    <footer>
+      <svg class="bottom-orn" viewBox="0 0 200 24" aria-hidden="true">
+        <path d="M0 12 H80 M120 12 H200" stroke="#d4af37" stroke-opacity=".6"/>
+        <path d="M100 1 L104 9 L113 7 L107 13 L113 19 L104 17 L100 25 L96 17 L87 19 L93 13 L87 7 L96 9 Z" fill="#d4af37"/>
+      </svg>
+      <b>طريقة الحساب:</b> الهيئة المصرية العامة للمساحة<br>
+      (الفجر ١٩٫٥° — العشاء ١٧٫٥°) · التوقيت المحلي للقاهرة<br>
+      المواقيت تقريبية وقد تختلف دقيقة أو دقيقتين عن التقويم الرسمي
+    </footer>
+
+  </div></div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  /* ===== إعدادات القاهرة ===== */
+  var LAT = 30.0444, LNG = 31.2357, ELEV = 23;
+  var TZ  = 'Africa/Cairo';
+  var FAJR_ANGLE = 19.5, ISHA_ANGLE = 17.5;   // الهيئة المصرية العامة للمساحة
+  var ASR_FACTOR = 1;                          // المذهب الشافعي/الجمهور
+  var DHUHR_ADJ = 0;                           // دقائق إضافية للظهر (احتياط)
+
+  /* ===== أدوات رياضية (بالدرجات) ===== */
+  var d2r = Math.PI/180, r2d = 180/Math.PI;
+  function sin(d){return Math.sin(d*d2r)}
+  function cos(d){return Math.cos(d*d2r)}
+  function tan(d){return Math.tan(d*d2r)}
+  function asin(x){return Math.asin(x)*r2d}
+  function acos(x){return Math.acos(x)*r2d}
+  function atan2(y,x){return Math.atan2(y,x)*r2d}
+  function acot(x){return Math.atan(1/x)*r2d}
+  function fixAngle(a){a=a-360*Math.floor(a/360);return a}
+  function fixHour(h){h=h-24*Math.floor(h/24);return h}
+
+  function julian(y,m,d){
+    if(m<=2){y-=1;m+=12}
+    var A=Math.floor(y/100), B=2-A+Math.floor(A/4);
+    return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5;
+  }
+  function sunPos(jd){
+    var D=jd-2451545.0;
+    var g=fixAngle(357.529+0.98560028*D);
+    var q=fixAngle(280.459+0.98564736*D);
+    var L=fixAngle(q+1.915*sin(g)+0.020*sin(2*g));
+    var e=23.439-0.00000036*D;
+    var RA=fixHour(atan2(cos(e)*sin(L),cos(L))/15);
+    return {decl:asin(sin(e)*sin(L)), eqt:q/15-RA};
+  }
+
+  /* ===== حساب مواقيت يوم معيّن (ساعات عشرية بتوقيت القاهرة) ===== */
+  function compute(y,m,d,tzOffset){
+    var jd=julian(y,m,d)-LNG/(15*24);
+    function midDay(t){var eqt=sunPos(jd+t).eqt;return fixHour(12-eqt)}
+    function angleTime(angle,t,ccw){
+      var decl=sunPos(jd+t).decl, noon=midDay(t);
+      var v=(-sin(angle)-sin(decl)*sin(LAT))/(cos(decl)*cos(LAT));
+      v=Math.max(-1,Math.min(1,v));
+      var t2=acos(v)/15;
+      return noon+(ccw?-t2:t2);
+    }
+    function asrTime(f,t){
+      var decl=sunPos(jd+t).decl;
+      var angle=-acot(f+tan(Math.abs(LAT-decl)));
+      return angleTime(angle,t,false);
+    }
+    var riseSet=0.833+0.0347*Math.sqrt(ELEV);
+    var tt={fajr:5/24,sunrise:6/24,dhuhr:12/24,asr:13/24,sunset:18/24,isha:18/24};
+    var r={
+      fajr:   angleTime(FAJR_ANGLE,tt.fajr,true),
+      sunrise:angleTime(riseSet,tt.sunrise,true),
+      dhuhr:  midDay(tt.dhuhr)+DHUHR_ADJ/60,
+      asr:    asrTime(ASR_FACTOR,tt.asr),
+      maghrib:angleTime(riseSet,tt.sunset,false),
+      isha:   angleTime(ISHA_ANGLE,tt.isha,false)
+    };
+    var shift=tzOffset-LNG/15;
+    for(var k in r){r[k]=fixHour(r[k]+shift)}
+    return r;
+  }
+
+  /* ===== توقيت القاهرة الحالي (بغض النظر عن توقيت الجهاز) ===== */
+  var fmtParts=null;
+  try{
+    fmtParts=new Intl.DateTimeFormat('en-US',{timeZone:TZ,hourCycle:'h23',
+      year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric'});
+  }catch(e){fmtParts=null}
+
+  // قاعدة التوقيت الصيفي في مصر (احتياطي): آخر جمعة من أبريل حتى آخر خميس من أكتوبر
+  function lastWeekday(y,mon,wd){ // mon: 0-11
+    var d=new Date(Date.UTC(y,mon+1,0)); // آخر يوم في الشهر
+    while(d.getUTCDay()!==wd) d.setUTCDate(d.getUTCDate()-1);
+    return d.getUTCDate();
+  }
+  function fallbackOffset(y,m,d){
+    var s=lastWeekday(y,3,5), e=lastWeekday(y,9,4);
+    var cur=Date.UTC(y,m-1,d), a=Date.UTC(y,3,s), b=Date.UTC(y,9,e);
+    return (cur>=a && cur<=b)?3:2;
+  }
+
+  function cairoNow(){
+    var now=new Date();
+    if(fmtParts){
+      var o={};
+      fmtParts.formatToParts(now).forEach(function(p){o[p.type]=parseInt(p.value,10)});
+      if(o.hour===24)o.hour=0;
+      var asUTC=Date.UTC(o.year,o.month-1,o.day,o.hour,o.minute,o.second);
+      var off=Math.round((asUTC-Math.floor(now.getTime()/1000)*1000)/3600000);
+      return {y:o.year,m:o.month,d:o.day,h:o.hour,mi:o.minute,s:o.second,off:off,epoch:now.getTime()};
+    }
+    // احتياطي بدون Intl
+    var off2=fallbackOffset(now.getUTCFullYear(),now.getUTCMonth()+1,now.getUTCDate());
+    var c=new Date(now.getTime()+off2*3600000);
+    return {y:c.getUTCFullYear(),m:c.getUTCMonth()+1,d:c.getUTCDate(),
+            h:c.getUTCHours(),mi:c.getUTCMinutes(),s:c.getUTCSeconds(),off:off2,epoch:now.getTime()};
+  }
+
+  /* ===== تنسيق عربي ===== */
+  var AR='٠١٢٣٤٥٦٧٨٩';
+  function ar(n){return String(n).replace(/\d/g,function(c){return AR[c]})}
+  function pad(n){return n<10?'0'+n:''+n}
+  function fmt12(hours){
+    var mins=Math.round(hours*60); // تقريب لأقرب دقيقة
+    mins=((mins%1440)+1440)%1440;
+    var h=Math.floor(mins/60), m=mins%60;
+    var suf=h>=12?'م':'ص';
+    var h12=h%12; if(h12===0)h12=12;
+    return {t:ar(h12)+':'+ar(pad(m)), s:suf};
+  }
+
+  var NAMES=[
+    ['fajr','الفجر'],['sunrise','الشروق'],['dhuhr','الظهر'],
+    ['asr','العصر'],['maghrib','المغرب'],['isha','العشاء']
+  ];
+  var ICONS={
+    fajr:'<svg viewBox="0 0 26 26" fill="none" stroke="#d4af37" stroke-width="1.6" stroke-linecap="round"><path d="M3 19 H23"/><path d="M7 19 a6 6 0 0 1 12 0"/><path d="M13 7 V4 M5.5 11 L3.5 9.5 M20.5 11 L22.5 9.5"/></svg>',
+    sunrise:'<svg viewBox="0 0 26 26" fill="none" stroke="#d4af37" stroke-width="1.6" stroke-linecap="round"><path d="M3 20 H23"/><circle cx="13" cy="15" r="4.5" fill="#d4af37" stroke="none"/><path d="M13 6 V3 M4.5 11 L2.8 9.5 M21.5 11 L23.2 9.5 M8 8 L6.5 6.5 M18 8 L19.5 6.5"/></svg>',
+    dhuhr:'<svg viewBox="0 0 26 26" fill="none" stroke="#d4af37" stroke-width="1.6" stroke-linecap="round"><circle cx="13" cy="13" r="5" fill="#d4af37" stroke="none"/><path d="M13 2 V5 M13 21 V24 M2 13 H5 M21 13 H24 M5.2 5.2 L7.3 7.3 M18.7 18.7 L20.8 20.8 M5.2 20.8 L7.3 18.7 M18.7 7.3 L20.8 5.2"/></svg>',
+    asr:'<svg viewBox="0 0 26 26" fill="none" stroke="#d4af37" stroke-width="1.6" stroke-linecap="round"><circle cx="9" cy="9" r="4" fill="#d4af37" stroke="none"/><path d="M9 2 V3.5 M2 9 H3.5 M4 4 L5 5 M14 4 L13 5"/><path d="M12 24 L18 11 L24 24 Z" fill="none"/></svg>',
+    maghrib:'<svg viewBox="0 0 26 26" fill="none" stroke="#d4af37" stroke-width="1.6" stroke-linecap="round"><path d="M3 19 H23"/><path d="M7 19 a6 6 0 0 1 12 0" fill="#d4af37" stroke="none"/><path d="M6 23 H20" stroke-opacity=".6"/><path d="M13 8 V11 M6 11 L8 13 M20 11 L18 13"/></svg>',
+    isha:'<svg viewBox="0 0 26 26" fill="none"><path d="M18 4 a10 10 0 1 0 5 14 a8 8 0 0 1 -5 -14 Z" fill="#d4af37"/><path d="M5 5 l1 2.5 2.5 1 -2.5 1 -1 2.5 -1 -2.5 -2.5 -1 2.5 -1 Z" fill="#d4af37"/></svg>'
+  };
+
+  var el={
+    clock:document.getElementById('clock'),
+    hijri:document.getElementById('hijri'),
+    greg:document.getElementById('greg'),
+    nextName:document.getElementById('nextName'),
+    count:document.getElementById('count'),
+    nextAt:document.getElementById('nextAt'),
+    times:document.getElementById('times')
+  };
+
+  function dateStrings(c){
+    var utc=new Date(Date.UTC(c.y,c.m-1,c.d,12));
+    var hij='',gr='';
+    try{
+      hij=new Intl.DateTimeFormat('ar-EG-u-ca-islamic-umalqura-nu-arab',
+        {timeZone:'UTC',day:'numeric',month:'long',year:'numeric'}).format(utc);
+      hij=hij.replace(/\s*هـ$/,'')+' هـ';
+    }catch(e){}
+    try{
+      gr=new Intl.DateTimeFormat('ar-EG-u-nu-arab',
+        {timeZone:'UTC',weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(utc);
+    }catch(e){gr=c.d+'/'+c.m+'/'+c.y}
+    return {hij:hij,gr:gr};
+  }
+
+  var cache={key:'',today:null,tomorrow:null};
+  function getTimes(c){
+    var key=c.y+'-'+c.m+'-'+c.d;
+    if(cache.key!==key){
+      cache.key=key;
+      cache.today=compute(c.y,c.m,c.d,c.off);
+      var nx=new Date(Date.UTC(c.y,c.m-1,c.d+1));
+      var offNext=fmtParts?c.off:fallbackOffset(nx.getUTCFullYear(),nx.getUTCMonth()+1,nx.getUTCDate());
+      cache.tomorrow=compute(nx.getUTCFullYear(),nx.getUTCMonth()+1,nx.getUTCDate(),offNext);
+      var ds=dateStrings(c);
+      el.hijri.textContent=ds.hij;
+      el.greg.textContent=ds.gr;
+      buildList();
+    }
+    return cache;
+  }
+
+  function buildList(){
+    var html='';
+    NAMES.forEach(function(p){
+      var f=fmt12(cache.today[p[0]]);
+      html+='<li data-k="'+p[0]+'"><span class="n">'+ICONS[p[0]]+p[1]+
+            '</span><span class="t">'+f.t+'<small>'+f.s+'</small></span></li>';
+    });
+    el.times.innerHTML=html;
+  }
+
+  function tick(){
+    var c=cairoNow();
+    var cs=getTimes(c);
+    var nowH=c.h+c.mi/60+c.s/3600;
+
+    // الساعة
+    var h12=c.h%12; if(h12===0)h12=12;
+    el.clock.innerHTML=ar(pad(h12))+':'+ar(pad(c.mi))+':'+ar(pad(c.s))+'<small>'+(c.h>=12?'م':'ص')+'</small>';
+
+    // الصلاة القادمة (الشروق ليس صلاة فيُستثنى من العد التنازلي)
+    var order=['fajr','dhuhr','asr','maghrib','isha'];
+    var label={fajr:'الفجر',dhuhr:'الظهر',asr:'العصر',maghrib:'المغرب',isha:'العشاء'};
+    var nextK=null,diff=0;
+    for(var i=0;i<order.length;i++){
+      var t=cs.today[order[i]];
+      if(t*3600>nowH*3600+0.5){nextK=order[i];diff=t*3600-nowH*3600;break}
+    }
+    var tomorrowFlag=false;
+    if(!nextK){
+      nextK='fajr';tomorrowFlag=true;
+      diff=(24-nowH)*3600+cs.tomorrow.fajr*3600;
+    }
+    diff=Math.max(0,Math.round(diff));
+    var hh=Math.floor(diff/3600),mm=Math.floor((diff%3600)/60),ss=diff%60;
+    el.nextName.textContent=label[nextK]+(tomorrowFlag?' (غدًا)':'');
+    el.count.textContent=ar(pad(hh))+':'+ar(pad(mm))+':'+ar(pad(ss));
+    var f=fmt12((tomorrowFlag?cs.tomorrow:cs.today)[nextK]);
+    el.nextAt.textContent='الأذان الساعة '+f.t+' '+f.s;
+
+    // تلوين الصلاة الحالية
+    // الصلاة الحالية = آخر موعد (من الفجر..العشاء) فات
+    var cur=null;
+    for(var j=0;j<NAMES.length;j++){
+      if(cs.today[NAMES[j][0]]<=nowH) cur=NAMES[j][0];
+    }
+    // بعد منتصف الليل وقبل الفجر: العشاء هي الحالية
+    if(!cur) cur='isha';
+    var lis=el.times.children;
+    var passedAll=true;
+    for(var k=0;k<lis.length;k++){
+      var key=lis[k].getAttribute('data-k');
+      var isCur=(key===cur);
+      var isPassed=cs.today[key]<=nowH && !isCur;
+      lis[k].className=isCur?'active':(isPassed?'passed':'');
+    }
+  }
+
+  tick();
+  setInterval(tick,1000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)tick()});
+})();
+</script>
+</body>
+</html>
